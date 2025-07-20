@@ -43,7 +43,7 @@ function App() {
 
         const token = await getToken(messaging, {
           vapidKey:
-            "BN-dNKX2LZKTzPGgvG1XUjr7yNYSTH8caqNdQq-cMsD5yLkVP9Zaz1WwbbE1KL9BwvyFbY880ik21YSld6MQm2w",
+            "MY_VAPID_KEY",
         });
 
         if (token) {
