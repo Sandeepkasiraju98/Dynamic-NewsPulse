@@ -11,25 +11,24 @@ import "./index.css";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [country] = useState("us");
   const [category, setCategory] = useState("technology");
   const [keyword, setKeyword] = useState("");
-  const [viewSaved, setViewSaved] = useState(false);
+  const [viewSaved, setViewSaved] = useState(() => localStorage.getItem("viewSaved") === "true");
 
-  // Your GNews API key here
   const apiKey = "ce2847efc17c254213a21b9a7d63d3fc";
 
-  // 🔐 Auth state listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setLoadingUser(false);
     });
     return () => unsubscribe();
   }, []);
 
-  // 🔔 Get and save FCM token on login
   useEffect(() => {
     if (!user) return;
 
@@ -43,7 +42,7 @@ function App() {
 
         const token = await getToken(messaging, {
           vapidKey:
-            "MY_VAPID_KEY",
+            "BN-dNKX2LZKTzPGgvG1XUjr7yNYSTH8caqNdQq-cMsD5yLkVP9Zaz1WwbbE1KL9BwvyFbY880ik21YSld6MQm2w",
         });
 
         if (token) {
@@ -58,14 +57,12 @@ function App() {
     setupFcm();
   }, [user]);
 
-  // 📥 Save user preferences
   useEffect(() => {
     if (user) {
       setDoc(doc(db, "users", user.uid), { preferences: { category, keyword } }, { merge: true });
     }
   }, [category, keyword, user]);
 
-  // 📩 Handle foreground FCM messages
   useEffect(() => {
     if (!messaging) return;
 
@@ -77,7 +74,6 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // 📰 Fetch news using GNews API with your API key
   useEffect(() => {
     if (!user || viewSaved) return;
 
@@ -96,12 +92,15 @@ function App() {
           },
         });
 
-        if (!response.ok) throw new Error(`Server responded with status ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status} - ${response.statusText}`);
+        }
 
         const data = await response.json();
         setArticles(data.articles || []);
       } catch (error) {
         console.error("❌ Error fetching news:", error);
+        setArticles([]);
       }
       setLoading(false);
     }
@@ -109,17 +108,25 @@ function App() {
     fetchNews();
   }, [country, category, keyword, user, viewSaved]);
 
+  useEffect(() => {
+    localStorage.setItem("viewSaved", viewSaved);
+  }, [viewSaved]);
+
+  if (loadingUser) return null;
+
   if (!user) return <Login onLogin={() => {}} />;
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans antialiased relative">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white font-sans antialiased flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 bg-white border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-3xl font-semibold tracking-tight">News Dashboard</h1>
+      <header className="sticky top-0 bg-indigo-900 bg-opacity-90 border-b border-white/30 z-50 min-h-[64px]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-center relative">
+          <h1 className="text-4xl font-extrabold tracking-tight select-none text-center">
+            Dynamic News Pulse
+          </h1>
           <button
             onClick={() => signOut(auth)}
-            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white text-indigo-900 font-semibold py-1.5 px-4 rounded-md shadow hover:bg-indigo-100 transition"
             aria-label="Logout"
           >
             Logout
@@ -127,17 +134,21 @@ function App() {
         </div>
       </header>
 
-      {/* Toggle */}
-      <section className="max-w-7xl mx-auto px-6 py-6 flex justify-center gap-4 border-b border-gray-100">
+      {/* Toggle Buttons */}
+      <section className="max-w-7xl mx-auto px-6 py-6 flex justify-center gap-6 border-b border-white/30">
         <button
           onClick={() => setViewSaved(false)}
-          className={`px-4 py-2 rounded ${!viewSaved ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"} transition`}
+          className={`px-5 py-2 rounded-lg font-semibold transition ${
+            !viewSaved ? "bg-white text-indigo-900 shadow-lg" : "bg-white/20 text-white"
+          }`}
         >
           Latest News
         </button>
         <button
           onClick={() => setViewSaved(true)}
-          className={`px-4 py-2 rounded ${viewSaved ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"} transition`}
+          className={`px-5 py-2 rounded-lg font-semibold transition ${
+            viewSaved ? "bg-white text-indigo-900 shadow-lg" : "bg-white/20 text-white"
+          }`}
         >
           Saved Articles
         </button>
@@ -145,41 +156,46 @@ function App() {
 
       {/* Filters */}
       {!viewSaved && (
-        <section className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100">
-          <div className="text-sm font-semibold text-gray-700 select-none">USA</div>
+        <section className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-5 border-b border-white/30">
+          <div className="text-sm font-semibold text-white select-none">USA</div>
+
           <select
             onChange={(e) => setCategory(e.target.value)}
             value={category}
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm"
+            className="bg-white text-indigo-900 rounded-md px-4 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
           >
             <option value="technology">Technology</option>
             <option value="business">Business</option>
             <option value="sports">Sports</option>
             <option value="general">General</option>
           </select>
+
           <input
             type="text"
             placeholder="Search news..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm"
+            className="px-4 py-2 rounded-md shadow-md text-indigo-900 placeholder-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
           />
         </section>
       )}
 
-      {/* Main */}
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto px-6 py-10 flex-grow">
         {viewSaved ? (
           <SavedArticles user={user} db={db} />
         ) : loading ? (
-          <p className="text-center text-gray-500 mt-20 text-lg">Loading news...</p>
+          <p className="text-center text-white mt-20 text-lg font-semibold">Loading news...</p>
         ) : articles.length > 0 ? (
           <>
-            <ChartSection articles={articles} />
+            <ChartSection
+              articles={articles}
+              chartColors={["#e0e7ff", "#a5b4fc", "#818cf8"]} // light blues/purples for contrast
+            />
             <NewsFeed articles={articles} />
           </>
         ) : (
-          <p className="text-center text-gray-500 mt-20 text-lg">
+          <p className="text-center text-white mt-20 text-lg font-semibold">
             No articles found. Try changing your search or category.
           </p>
         )}
