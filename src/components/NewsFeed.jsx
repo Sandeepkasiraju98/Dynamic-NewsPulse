@@ -8,6 +8,7 @@ const sentimentAnalyzer = new Sentiment();
 function NewsFeed({ articles }) {
   const [savingIndex, setSavingIndex] = useState(null);
   const [savedIndices, setSavedIndices] = useState(new Set());
+  const fallbackImage = "https://via.placeholder.com/400x200?text=No+Image";
 
   // Function to get sentiment and return emoji
   function getSentimentEmoji(text) {
@@ -49,11 +50,15 @@ function NewsFeed({ articles }) {
           className="p-6 border border-gray-200 rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 cursor-pointer fade-in-up"
           style={{ animationDelay: `${index * 0.1}s` }}
         >
-          {article.urlToImage && (
+          {(article.image || fallbackImage) && (
             <img
-              src={article.urlToImage}
-              alt="news"
+              src={article.image || fallbackImage}
+              alt={article.title || "news"}
               className="w-full h-48 object-cover rounded-md mb-4"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = fallbackImage;
+              }}
             />
           )}
           <div className="flex justify-between items-center mb-2">
