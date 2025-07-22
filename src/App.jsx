@@ -117,16 +117,22 @@ function App() {
   if (!user) return <Login onLogin={() => {}} />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white font-sans antialiased flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#2c5364] to-[#24243e] text-white font-inter antialiased flex flex-col relative overflow-x-hidden">
+      {/* Animated Gradient Overlay */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#a18cd1]/30 via-[#fbc2eb]/20 to-[#fad0c4]/30 animate-gradient-x" />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 bg-indigo-900 bg-opacity-90 border-b border-white/30 z-50 min-h-[64px]">
+      <header className="sticky top-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-center relative">
-          <h1 className="text-4xl font-extrabold tracking-tight select-none text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight select-none text-center bg-gradient-to-r from-[#a18cd1] via-[#fbc2eb] to-[#fad0c4] bg-clip-text text-transparent drop-shadow-lg">
+            <span className="inline-block align-middle mr-2">📰</span>
             Dynamic News Pulse
           </h1>
           <button
             onClick={() => signOut(auth)}
-            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white text-indigo-900 font-semibold py-1.5 px-4 rounded-md shadow hover:bg-indigo-100 transition"
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-[#a18cd1] to-[#fbc2eb] text-[#24243e] font-bold py-2 px-5 rounded-lg shadow-lg hover:scale-105 hover:from-[#fbc2eb] hover:to-[#a18cd1] transition-all duration-200"
             aria-label="Logout"
           >
             Logout
@@ -135,34 +141,42 @@ function App() {
       </header>
 
       {/* Toggle Buttons */}
-      <section className="max-w-7xl mx-auto px-6 py-6 flex justify-center gap-6 border-b border-white/30">
+      <section className="max-w-7xl mx-auto px-6 py-6 flex justify-center gap-6 border-b border-white/20">
         <button
           onClick={() => setViewSaved(false)}
-          className={`px-5 py-2 rounded-lg font-semibold transition ${
-            !viewSaved ? "bg-white text-indigo-900 shadow-lg" : "bg-white/20 text-white"
+          className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg border-2 ${
+            !viewSaved
+              ? "bg-white/80 text-[#24243e] border-[#a18cd1] scale-105"
+              : "bg-white/10 text-white border-transparent hover:bg-white/20"
           }`}
         >
+          <span role="img" aria-label="news" className="mr-2">📰</span>
           Latest News
         </button>
         <button
           onClick={() => setViewSaved(true)}
-          className={`px-5 py-2 rounded-lg font-semibold transition ${
-            viewSaved ? "bg-white text-indigo-900 shadow-lg" : "bg-white/20 text-white"
+          className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg border-2 ${
+            viewSaved
+              ? "bg-white/80 text-[#24243e] border-[#a18cd1] scale-105"
+              : "bg-white/10 text-white border-transparent hover:bg-white/20"
           }`}
         >
+          <span role="img" aria-label="bookmark" className="mr-2">🔖</span>
           Saved Articles
         </button>
       </section>
 
       {/* Filters */}
       {!viewSaved && (
-        <section className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-5 border-b border-white/30">
-          <div className="text-sm font-semibold text-white select-none">USA</div>
+        <section className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-5 border-b border-white/20">
+          <div className="text-base font-semibold text-white/80 select-none flex items-center gap-2">
+            <span role="img" aria-label="flag">🇺🇸</span> USA
+          </div>
 
           <select
             onChange={(e) => setCategory(e.target.value)}
             value={category}
-            className="bg-white text-indigo-900 rounded-md px-4 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            className="bg-white/80 text-[#24243e] rounded-lg px-4 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-[#a18cd1] font-semibold transition"
           >
             <option value="technology">Technology</option>
             <option value="business">Business</option>
@@ -172,34 +186,72 @@ function App() {
 
           <input
             type="text"
-            placeholder="Search news..."
+            placeholder="🔎 Search news..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="px-4 py-2 rounded-md shadow-md text-indigo-900 placeholder-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            className="px-4 py-2 rounded-lg shadow-md text-[#24243e] placeholder-[#a18cd1] bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#a18cd1] font-medium transition"
           />
         </section>
       )}
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-6 py-10 flex-grow">
+      <main className="max-w-7xl mx-auto px-6 py-10 flex-grow relative z-10">
         {viewSaved ? (
-          <SavedArticles user={user} db={db} />
+          <div className="glassmorphism p-6 rounded-2xl shadow-2xl">
+            <SavedArticles user={user} db={db} />
+          </div>
         ) : loading ? (
-          <p className="text-center text-white mt-20 text-lg font-semibold">Loading news...</p>
+          <div className="flex flex-col items-center justify-center mt-20">
+            <div className="w-16 h-16 border-4 border-[#a18cd1] border-t-transparent rounded-full animate-spin mb-6"></div>
+            <p className="text-center text-white text-lg font-semibold">Loading news...</p>
+          </div>
         ) : articles.length > 0 ? (
           <>
             <ChartSection
               articles={articles}
-              chartColors={["#e0e7ff", "#a5b4fc", "#818cf8"]} // light blues/purples for contrast
+              chartColors={[
+                "#a18cd1", // purple
+                "#fbc2eb", // pink
+                "#fad0c4", // peach
+                "#b9deed", // light blue
+                "#fcb69f", // coral
+                "#c2e9fb", // sky blue
+              ]}
             />
-            <NewsFeed articles={articles} />
+            <div className="glassmorphism p-6 rounded-2xl shadow-2xl mt-8">
+              <NewsFeed articles={articles} />
+            </div>
           </>
         ) : (
-          <p className="text-center text-white mt-20 text-lg font-semibold">
-            No articles found. Try changing your search or category.
-          </p>
+          <div className="flex flex-col items-center justify-center mt-20">
+            <span className="text-5xl mb-4">😕</span>
+            <p className="text-center text-white text-lg font-semibold">
+              No articles found.<br />Try changing your search or category.
+            </p>
+          </div>
         )}
       </main>
+
+      {/* Glassmorphism style */}
+      <style>{`
+        .glassmorphism {
+          background: rgba(255,255,255,0.10);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 20px;
+          border: 1.5px solid rgba(255,255,255,0.18);
+        }
+        .animate-gradient-x {
+          background-size: 200% 200%;
+          animation: gradient-x 8s ease-in-out infinite;
+        }
+        @keyframes gradient-x {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
     </div>
   );
 }
