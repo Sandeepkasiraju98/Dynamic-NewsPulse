@@ -139,5 +139,3 @@ MIT License. See `LICENSE` for more information.
 Special thanks to the GNews API team and Firebase community for enabling open access to powerful tools that fuel innovation.
 
 
-Let me know if you'd like to generate badges (e.g., for license, tech stack, deployment) or a table of contents.
-```
