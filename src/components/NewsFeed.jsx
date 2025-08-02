@@ -10,7 +10,6 @@ function NewsFeed({ articles }) {
   const [savedIndices, setSavedIndices] = useState(new Set());
   const fallbackImage = "https://via.placeholder.com/400x200?text=No+Image";
 
-  // Function to get sentiment and return emoji
   function getSentimentEmoji(text) {
     if (!text) return "😐"; // Neutral if no text
     const result = sentimentAnalyzer.analyze(text);
