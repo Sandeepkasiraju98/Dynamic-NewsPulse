@@ -21,7 +21,7 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React (Vite)
+- React (Create React App)
 - Tailwind CSS
 - Chart.js
 
