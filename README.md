@@ -1,74 +1,136 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# 📰 Dynamic News Pulse
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Dynamic News Pulse is a full-stack React web application that delivers real-time news updates using the GNews API and Firebase. It features user authentication, push notifications (FCM), search and category filters, and interactive sentiment-based data visualizations.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- 🔐 Firebase Authentication (Email/Password)
+- 🔔 Push Notifications using Firebase Cloud Messaging (FCM)
+- 🧠 Real-time news feed using GNews API
+- 📊 Interactive sentiment-based charts with Chart.js
+- 📁 Save and view favorite articles
+- 🌐 Category & keyword filters (e.g., Tech, Sports, Business)
+- 🌈 Responsive UI with Tailwind CSS & animated gradient themes
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📦 Tech Stack
 
-### `npm test`
+### Frontend
+- React
+- Tailwind CSS
+- Chart.js
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Backend
+- Node.js (for breaking news delivery)
+- Firebase Cloud Firestore
+- Firebase Authentication
+- Firebase Cloud Messaging (FCM)
 
-### `npm run build`
+### APIs
+- GNews API
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 💻 Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Pre-requisites
 
-### `npm run eject`
+- Node.js (v16+)
+- Firebase Project (with service account credentials)
+- GNews API Key
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 1. Clone the repository
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+git clone https://github.com/your-username/dynamic-news-pulse.git
+cd dynamic-news-pulse
+````
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 2. Install dependencies
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+npm install
+```
 
-## Learn More
+### 3. Set up your `.env` file
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Create a `.env` file in the root folder and add:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```env
+REACT_APP_GNEWS_API_KEY=your_gnews_api_key
+REACT_APP_FIREBASE_VAPID_KEY=your_fcm_vapid_key
+```
 
-### Code Splitting
+### 4. Add Firebase credentials
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Save your Firebase service account key as:
 
-### Analyzing the Bundle Size
+```
+public/serviceAccountKey.json
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+> ⚠️ **Do not commit this file to GitHub!**
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## ▶️ How to Run
 
-### Advanced Configuration
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Then open your browser and visit:
+[http://localhost:3000](http://localhost:3000)
 
-### Deployment
+### What you can do:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+* Sign up or log in using email/password
+* Browse news by category or search keywords
+* Click 🔖 to save favorite articles
+* Get push alerts for breaking news
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# Dynamic-NewsPulse
->>>>>>> eb6be973c1c2e78869f458c3002faa6b1c8ac4fc
+## 🌍 Deployment
+
+You can deploy using:
+
+* **Frontend:** [Vercel](https://vercel.com) or [Netlify](https://netlify.com)
+* **Backend:** Firebase Functions (for breaking news notification delivery)
+
+---
+
+## 🔐 Security Notice
+
+Ensure the following files are added to your `.gitignore`:
+
+```
+.env
+serviceAccountKey.json
+node_modules/
+```
+
+> Never commit API keys or secrets to GitHub.
+
+---
+
+## 🙌 Credits
+
+This app was built as a full-stack project to explore:
+
+* Real-time data APIs
+* Firebase Auth & FCM
+* Chart.js visualizations
+* React + Tailwind animations
+* Backend trigger notifications
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+
