@@ -160,7 +160,7 @@ function App() {
       {!viewSaved && (
         <section className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-5 border-b border-white/20">
           <div className="text-base font-semibold text-white/80 flex items-center gap-2">
-            🇺🇸 USA
+            US
           </div>
           <select
             onChange={(e) => setCategory(e.target.value)}
