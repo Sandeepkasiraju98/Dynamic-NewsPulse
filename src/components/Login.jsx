@@ -2,21 +2,32 @@ import React, { useState } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  sendPasswordResetEmail,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, googleProvider } from "../firebase";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AuthForm({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resetSent, setResetSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    if (isSignup && password !== confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (isSignup) {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -27,11 +38,37 @@ export default function AuthForm({ onLogin }) {
     } catch (err) {
       setError(
         err.code === "auth/email-already-in-use"
-          ? "Email is already in use"
-          : "Invalid email or password"
+          ? "Email already in use"
+          : err.message || "Authentication failed"
       );
     }
+
     setLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setError("");
+      setLoading(true);
+      await signInWithPopup(auth, googleProvider);
+      onLogin();
+    } catch (err) {
+      setError("Google sign-in failed");
+    }
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email to reset password.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+    } catch (err) {
+      setError("Failed to send password reset email.");
+    }
   };
 
   return (
@@ -61,7 +98,7 @@ export default function AuthForm({ onLogin }) {
           />
         </label>
 
-        <label className="block mb-6">
+        <label className="block mb-4">
           <span className="text-gray-700 font-medium">Password</span>
           <input
             type="password"
@@ -75,18 +112,49 @@ export default function AuthForm({ onLogin }) {
           />
         </label>
 
+        {isSignup && (
+          <label className="block mb-4">
+            <span className="text-gray-700 font-medium">Re-enter Password</span>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
+              required
+              autoComplete="new-password"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              placeholder="Confirm your password"
+            />
+          </label>
+        )}
+
         <AnimatePresence>
-          {error && (
+          {(error || resetSent) && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mb-4 text-red-600 text-center font-semibold"
+              className={`mb-4 text-center font-semibold ${
+                error ? "text-red-600" : "text-green-600"
+              }`}
             >
-              {error}
+              {resetSent ? "Reset email sent!" : error}
             </motion.div>
           )}
         </AnimatePresence>
+
+        {!isSignup && (
+          <div className="mb-4 text-right text-sm">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={loading}
+              className="text-indigo-600 hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
 
         <button
           type="submit"
@@ -122,11 +190,27 @@ export default function AuthForm({ onLogin }) {
           {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             type="button"
-            onClick={() => setIsSignup(!isSignup)}
+            onClick={() => {
+              setIsSignup(!isSignup);
+              setError("");
+              setResetSent(false);
+              setConfirmPassword("");
+            }}
             className="text-indigo-600 hover:underline font-medium"
             disabled={loading}
           >
             {isSignup ? "Log In" : "Sign Up"}
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300"
+          >
+            Continue with Google
           </button>
         </div>
       </motion.form>
