@@ -2,7 +2,7 @@
 
 **Dynamic News Pulse** is a modern, full-stack web application that delivers real-time, sentiment-aware news updates. Built with React and Firebase, it integrates push notifications, authentication, and data visualizations to provide an engaging, personalized news experience.
 
-🔗 **Live Demo:** [https://dynamic-news-pulse.vercel.app](https://dynamic-news-pulse-i0jz6vupd-sandeep-kasiraju-projects.vercel.app)
+🔗 **Live Demo:** [https://dynamic-news-pulse.vercel.app](https://dynamic-news-pulse-9vo1f052y-sandeep-kasiraju-projects.vercel.app)
 
 ---
 
