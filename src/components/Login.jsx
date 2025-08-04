@@ -81,7 +81,7 @@ export default function AuthForm({ onLogin }) {
         className="bg-white bg-opacity-90 backdrop-blur-md rounded-xl shadow-lg p-10 max-w-md w-full"
       >
         <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
-          {isSignup ? "Create Account" : "Welcome Back"}
+          {isSignup ? "Create Account" : "Welcome! Your real-time news journey starts here"}
         </h2>
 
         <label className="block mb-4">
