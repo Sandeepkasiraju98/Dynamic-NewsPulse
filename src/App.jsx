@@ -19,6 +19,7 @@ function App() {
   const [keyword, setKeyword] = useState("");
   const [viewSaved, setViewSaved] = useState(() => localStorage.getItem("viewSaved") === "true");
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const apiKey = process.env.REACT_APP_GNEWS_API_KEY;
   const vapidKey = process.env.REACT_APP_FIREBASE_VAPID_KEY;
@@ -44,7 +45,17 @@ function App() {
           return;
         }
 
-@@ -70,50 +71,51 @@ function App() {
+@@ -60,63 +62,70 @@ function App() {
+  // Save preferences
+  useEffect(() => {
+    if (user) {
+      setDoc(doc(db, "users", user.uid), { preferences: { category, keyword } }, { merge: true });
+    }
+  }, [category, keyword, user]);
+
+  // Listen for foreground messages
+  useEffect(() => {
+    if (!messaging) return;
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("📨 Foreground message received:", payload);
@@ -60,6 +71,8 @@ function App() {
 
     async function fetchNews() {
       setLoading(true);
+      setErrorMessage("");
+      setLastUpdated(null);
       try {
         let url = `https://gnews.io/api/v4/top-headlines?token=${apiKey}&lang=en&country=${country}&topic=${category}`;
         if (keyword.trim() !== "") {
@@ -69,11 +82,16 @@ function App() {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Status ${response.status}`);
         const data = await response.json();
+        if (!response.ok) {
+          const apiError = data?.errors?.[0]?.message;
+          throw new Error(apiError || `Request failed with status ${response.status}.`);
+        }
         setArticles(data.articles || []);
         setLastUpdated(new Date());
       } catch (error) {
         console.error("❌ Error fetching news:", error);
         setArticles([]);
+        setErrorMessage(error.message || "Unable to load news right now.");
       }
       setLoading(false);
     }
@@ -96,7 +114,10 @@ function App() {
         <div className="absolute inset-0 bg-gradient-to-tr from-[#a18cd1]/30 via-[#fbc2eb]/20 to-[#fad0c4]/30 animate-gradient-x" />
       </div>
 
-@@ -138,97 +140,139 @@ function App() {
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-center relative">
+@@ -138,97 +147,152 @@ function App() {
           onClick={() => setViewSaved(false)}
           className={`px-6 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg border-2 ${
             !viewSaved
@@ -171,10 +192,23 @@ function App() {
           <div className="glassmorphism p-6 rounded-2xl shadow-2xl">
             <SavedArticles user={user} db={db} />
           </div>
+        ) : !apiKey ? (
+          <div className="glassmorphism p-6 rounded-2xl shadow-2xl text-center">
+            <p className="text-lg font-semibold">Connect your GNews API key to load stories.</p>
+            <p className="text-sm text-white/70 mt-2">
+              Add <span className="font-semibold">REACT_APP_GNEWS_API_KEY</span> to your .env and restart the app.
+            </p>
+          </div>
         ) : loading ? (
           <div className="flex flex-col items-center justify-center mt-20">
             <div className="w-16 h-16 border-4 border-[#a18cd1] border-t-transparent rounded-full animate-spin mb-6"></div>
             <p className="text-lg font-semibold">Loading news...</p>
+          </div>
+        ) : errorMessage ? (
+          <div className="glassmorphism p-6 rounded-2xl shadow-2xl text-center">
+            <span className="text-4xl">⚠️</span>
+            <p className="text-lg font-semibold mt-3">We hit a snag while loading stories.</p>
+            <p className="text-sm text-white/70 mt-2">{errorMessage}</p>
           </div>
         ) : articles.length > 0 ? (
           <>
